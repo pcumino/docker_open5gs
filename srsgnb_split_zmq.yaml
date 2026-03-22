@@ -1,0 +1,54 @@
+services:
+  srscu_zmq:
+    image: docker_srsran
+    container_name: srscu_zmq
+    stdin_open: true
+    tty: true
+    privileged: true
+    volumes:
+      - ./srsran:/mnt/srsran
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    environment:
+      - COMPONENT_NAME=cu_zmq
+    expose:
+      - "38412/sctp"
+      - "38472/sctp"
+      - "2152/udp"
+      - "2153/udp"
+    networks:
+      default:
+        ipv4_address: ${SRS_CU_IP}
+
+  srsdu_zmq:
+    image: docker_srsran
+    container_name: srsdu_zmq
+    stdin_open: true
+    tty: true
+    privileged: true
+    restart: on-failure
+    depends_on:
+      - srscu_zmq
+    volumes:
+      - ./srsran:/mnt/srsran
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    environment:
+      - COMPONENT_NAME=du_zmq
+    expose:
+      - "38472/sctp"
+      - "2152/udp"
+      - "2000/tcp"
+      - "2001/tcp"
+    networks:
+      default:
+        ipv4_address: ${SRS_DU_IP}
+
+networks:
+  default:
+    external: true
+    name: docker_open5gs_default

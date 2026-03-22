@@ -377,6 +377,13 @@ docker compose -f srsgnb.yaml up -d && docker container attach srsgnb
 # srsRAN ZMQ gNB (RF simulated)
 docker compose -f srsgnb_zmq.yaml up -d && docker container attach srsgnb_zmq
 
+# srsRAN CU/DU split over ZMQ (RF simulated, no RU)
+# Start CU first, then DU in separate terminals if you want to attach both:
+docker compose -f srsgnb_split_zmq.yaml up -d srscu_zmq && docker container attach srscu_zmq
+docker compose -f srsgnb_split_zmq.yaml up -d srsdu_zmq && docker container attach srsdu_zmq
+
+# For split mode, set SRS_ZMQ_DU_IP in .env to SRS_DU_IP before starting srsUE_5g_zmq.
+
 # srsRAN ZMQ 5G UE (RF simulated)
 docker compose -f srsue_5g_zmq.yaml up -d && docker container attach srsue_5g_zmq
 
@@ -386,6 +393,35 @@ docker compose -f nr-gnb.yaml up -d && docker container attach nr_gnb
 # UERANSIM NR-UE (RF simulated)
 docker compose -f nr-ue.yaml up -d && docker container attach nr_ue
 ```
+
+## Wireshark packet capture (RAN/5G)
+
+PCAP capture is now enabled by default for the srsRAN/srsLTE RAN profiles used in this repository.
+
+- srsRAN gNB PCAP files are written to `./srsran/` (host) via `/mnt/srsran/` (container), including: `gnb_mac.pcap`, `gnb_ngap.pcap`, `gnb_f1ap.pcap`, `gnb_e1ap.pcap`, `cu_cp_e2ap.pcap`, `cu_up_e2ap.pcap`, `du_e2ap.pcap`, `gnb_n3.pcap`.
+- srsLTE UE/eNB PCAP files are written to `./srslte/` (host) via `/mnt/srslte/` (container), including: `ue_mac.pcap`, `ue_mac_nr.pcap`, `ue_nas.pcap`, `enb_mac.pcap`, `enb_mac_nr.pcap`, `enb_s1ap.pcap`.
+
+### Quick workflow
+
+1. Start the required core + RAN components (for example `sa-deploy.yaml` + `srsgnb_zmq.yaml` + `srsue_5g_zmq.yaml`, or `4g-volte-deploy.yaml` + `srsenb_zmq.yaml` + `srsue_zmq.yaml`).
+2. Generate traffic (registration/attach + ping/iperf).
+3. Open the generated PCAP files from `./srsran/` and `./srslte/` in Wireshark.
+
+### Wireshark decode settings (for srsLTE compact PCAP format)
+
+- Add DLT mapping for MAC/MAC-NR:
+  - Wireshark `Edit -> Preferences -> Protocols -> DLT_USER`
+  - Add `DLT=149`, Payload Protocol=`udp`
+- Enable UDP heuristic dissectors:
+  - `Analyze -> Enabled Protocols -> MAC-LTE -> mac_lte_udp`
+  - `Analyze -> Enabled Protocols -> MAC-NR -> mac_nr_udp`
+- Add DLT mapping for S1AP:
+  - In `DLT_USER`, add `DLT=150`, Payload Protocol=`s1ap`
+
+### Notes
+
+- Some layers are not exported as decodable PCAP in default binaries (for example full RRC/PDCP visibility), so use service logs together with PCAP when deeper radio debugging is needed.
+- Long runs can generate large PCAP files; periodically archive/clean `./srsran/*.pcap` and `./srslte/*.pcap`.
 
 ## Docker Compose files overview
 
@@ -403,6 +439,7 @@ This repository provides several Docker Compose files to support different deplo
 | `srsran.yaml`                      | Deploys srsRAN_4G components (eNB/UE).                                                             |
 | `srsgnb.yaml`                      | Deploys srsRAN 5G gNB for OTA setups using SDR hardware.                                           |
 | `srsgnb_zmq.yaml`                  | Deploys srsRAN 5G gNB for RF simulated setups over ZMQ.                                            |
+| `srsgnb_split_zmq.yaml`            | Deploys srsRAN 5G CU/DU split over ZMQ for RF simulated setups (no RU hardware).                  |
 | `srsue_5g_zmq.yaml`                | Deploys srsRAN 5G UE for RF simulated setups over ZMQ.                                             |
 | `nr-gnb.yaml`                      | Deploys UERANSIM 5G gNB simulator.                                                                 |
 | `nr-ue.yaml`                       | Deploys UERANSIM 5G UE simulator.                                                                  |

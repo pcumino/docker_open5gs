@@ -1,0 +1,47 @@
+f1ap:
+  cu_cp_addr: SRS_CU_IP
+  bind_addr: SRS_DU_IP
+
+f1u:
+  peer_port: 2153
+  socket:
+    - bind_addr: SRS_DU_IP
+
+ru_sdr:
+  device_driver: zmq
+  device_args: tx_port=tcp://SRS_DU_IP:2000,rx_port=tcp://SRS_UE_IP:2001,base_srate=23.04e6
+  srate: 23.04
+  tx_gain: 75
+  rx_gain: 75
+
+cell_cfg:
+  dl_arfcn: 368500
+  band: 3
+  channel_bandwidth_MHz: 20
+  common_scs: 15
+  plmn: "PLMN"
+  tac: TAC
+  pci: 1
+  pdcch:
+    dedicated:
+      ss2_type: common
+      dci_format_0_1_and_1_1: false
+    common:
+      ss0_index: 0
+      coreset0_index: 13
+  pdsch:
+    mcs_table: qam64
+  pusch:
+    mcs_table: qam64
+  prach:
+    prach_config_index: 1
+
+log:
+  filename: /mnt/srsran/du.log
+  all_level: debug
+
+pcap:
+  mac_enable: true
+  mac_filename: /mnt/srsran/du_mac.pcap
+  f1ap_enable: true
+  f1ap_filename: /mnt/srsran/du_f1ap.pcap

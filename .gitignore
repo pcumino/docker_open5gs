@@ -5,3 +5,5 @@ log/
 **/*.db
 **/*.db-shm
 **/*.db-wal
+
+notes.md

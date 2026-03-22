@@ -1,0 +1,33 @@
+cu_cp:
+  amf:
+    addr: AMF_IP
+    bind_addr: SRS_CU_IP
+    supported_tracking_areas:
+      - tac: TAC
+        plmn_list:
+          - plmn: "PLMN"
+            tai_slice_support_list:
+              - sst: 1
+  f1ap:
+    bind_addr: SRS_CU_IP
+
+cu_up:
+  f1u:
+    bind_port: 2153
+    peer_port: 2152
+    socket:
+      - bind_addr: SRS_CU_IP
+
+log:
+  filename: /mnt/srsran/cu.log
+  all_level: debug
+
+pcap:
+  ngap_enable: true
+  ngap_filename: /mnt/srsran/cu_ngap.pcap
+  f1ap_enable: true
+  f1ap_filename: /mnt/srsran/cu_f1ap.pcap
+  e1ap_enable: true
+  e1ap_filename: /mnt/srsran/cu_e1ap.pcap
+  n3_enable: true
+  n3_filename: /mnt/srsran/cu_n3.pcap
