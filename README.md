@@ -404,8 +404,26 @@ PCAP capture is now enabled by default for the srsRAN/srsLTE RAN profiles used i
 ### Quick workflow
 
 1. Start the required core + RAN components (for example `sa-deploy.yaml` + `srsgnb_zmq.yaml` + `srsue_5g_zmq.yaml`, or `4g-volte-deploy.yaml` + `srsenb_zmq.yaml` + `srsue_zmq.yaml`).
+
+  - Monolitic version:
+  ```bash
+  ./start.sh core; ./start.sh split; ./start.sh ue-split
+  ```
+
+  - Split version:
+  ```bash
+  ./start.sh core; ./start.sh gnb; ./start.sh ue
+  ```
+
+  - Application version:
+  ```bash
+  ./run-iperf3-server.sh
+  ./run-iperf3-client.sh
+  ```
+
 2. Generate traffic (registration/attach + ping/iperf).
 3. Open the generated PCAP files from `./srsran/` and `./srslte/` in Wireshark.
+
 
 ### Wireshark decode settings (for srsLTE compact PCAP format)
 
