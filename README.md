@@ -407,12 +407,12 @@ PCAP capture is now enabled by default for the srsRAN/srsLTE RAN profiles used i
 
   - Monolitic version:
   ```bash
-  ./start.sh core; ./start.sh split; ./start.sh ue-split
+  ./start.sh core; ./start.sh gnb; ./start.sh ue
   ```
 
   - Split version:
   ```bash
-  ./start.sh core; ./start.sh gnb; ./start.sh ue
+  ./start.sh core; ./start.sh split; ./start.sh ue-split
   ```
 
   - Application version:
