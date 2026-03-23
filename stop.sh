@@ -11,12 +11,13 @@
 #===========================================================#
 
 case "$1" in
-    core)  NODE_NAME=sa-deploy         ;;
-    gnb)   NODE_NAME=srsgnb_zmq        ;;
-    split) NODE_NAME=srsgnb_split_zmq  ;;
-    ue)    NODE_NAME=srsue_5g_zmq      ;;
+    core)     NODE_NAME=sa-deploy         ;;
+    gnb)      NODE_NAME=srsgnb_zmq        ;;
+    split)    NODE_NAME=srsgnb_split_zmq  ;;
+    ue)       NODE_NAME=srsue_5g_zmq      ;;
+    ue-split) NODE_NAME=srsue_5g_zmq      ;;
     *)
-        echo "Usage: $0 [core|gnb|split|ue]"
+        echo "Usage: $0 [core|gnb|split|ue|ue-split]"
         exit 1
         ;;
 esac

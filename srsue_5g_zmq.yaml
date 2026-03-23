@@ -15,6 +15,7 @@ services:
       - .env
     environment:
       - COMPONENT_NAME=ue_5g_zmq
+      - SRS_ZMQ_DU_IP   # inherited from shell when set (split mode); unset = fallback to SRS_GNB_IP in init script
     expose:
       - "2000/tcp"
       - "2001/tcp"
