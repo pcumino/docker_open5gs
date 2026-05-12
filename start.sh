@@ -9,6 +9,14 @@
 #===========================================================#
 
 UE_SPLIT=false
+NO_ATTACH=false
+
+# Parse flags: accept --no-attach / -n anywhere in the argument list
+for arg in "$@"; do
+    case "$arg" in
+        --no-attach|-n) NO_ATTACH=true ;;
+    esac
+done
 
 case "$1" in
     core)     NODE_NAME=sa-deploy         ;;
@@ -30,14 +38,20 @@ if [ "$UE_SPLIT" = "true" ]; then
 fi
 
 echo "Stopping $NODE_NAME..."
+echo "docker compose -f ${NODE_NAME}.yaml down";
 docker compose -f ${NODE_NAME}.yaml down
 
 echo "Starting $NODE_NAME..."
+echo "docker compose -f ${NODE_NAME}.yaml up -d";
 docker compose -f ${NODE_NAME}.yaml up -d
 
-if [ "$NODE_NAME" == "srsue_5g_zmq" ]; then
-    echo "Installing iperf3 on $NODE_NAME..."
-    docker exec $NODE_NAME apt-get install iperf3 -y
+# if [ "$NODE_NAME" == "srsue_5g_zmq" ]; then
+#     echo "Installing iperf3 on $NODE_NAME..."
+#     docker exec $NODE_NAME apt-get install iperf3 -y
+# fi
+
+if [ "$NO_ATTACH" = "true" ]; then
+    exit 0
 fi
 
 if [ "$NODE_NAME" == "srsgnb_split_zmq" ]; then
@@ -49,8 +63,10 @@ if [ "$NODE_NAME" == "srsgnb_split_zmq" ]; then
         docker container attach srsdu_zmq
     fi
 else
-    read -p "Attach node? [Y|n] " attach_node
-    if [[ ! "$attach_node" =~ ^[Nn]$ ]]; then
-        docker container attach $NODE_NAME
-    fi
+	if [[ ! "$1" == "core" ]]; then
+	    read -p "Attach node? [Y|n] " attach_node
+	    if [[ ! "$attach_node" =~ ^[Nn]$ ]]; then
+	        docker container attach $NODE_NAME
+    	fi
+	fi
 fi

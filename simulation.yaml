@@ -1,0 +1,32 @@
+iperf3:
+  bitrate: "6M"
+  simtime: 30   # seconds
+  interval: 1   # seconds
+
+stack:
+  core: core
+  ran: split
+  ue: ue-split
+
+containers:
+  core:
+    - upf
+    - smf
+    - amf
+    - ausf
+    - nssf
+    - udm
+    - pcf
+    - bsf
+    - udr
+    - webui
+    - scp
+    - mongo
+    - grafana
+    - metrics
+    - nrf
+  ran:
+    - srscu_zmq
+    - srsdu_zmq
+  ue:
+    - srsue_5g_zmq
