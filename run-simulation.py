@@ -356,7 +356,7 @@ def _parse_args(argv: list) -> argparse.Namespace:
 	parser.add_argument(
 		"--stop-core",
 		action="store_true",
-		help="Stop core stack during cleanup or at end of successful run.",
+		help="Stop and restart core stack at the start of the run; also stop it during cleanup.",
 	)
 	parser.add_argument(
 		"--preflight-only",
@@ -380,9 +380,16 @@ def main(argv: list) -> None:
 		log("Preflight-only mode requested; exiting.")
 		return
 
+	if stop_core:
+		log("--stop-core set: stopping core containers before (re)start...")
+		subprocess.run(f"bash stop.sh {STACK['core']}", shell=True, check=False)
+		for c in CORE_CONTAINERS:
+			_wait_container_stopped(c)
+		log("Core containers stopped.")
+
 	log("Checking core containers...")
 	try:
-		if all(_container_running(c) for c in CORE_CONTAINERS):
+		if not stop_core and all(_container_running(c) for c in CORE_CONTAINERS):
 			log("Core containers are already running; skipping start.")
 		else:
 			log("Starting core containers...")

@@ -47,7 +47,6 @@ services:
     networks:
       default:
         ipv4_address: ${SRS_DU_IP}
-
 networks:
   default:
     external: true

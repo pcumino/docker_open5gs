@@ -3,10 +3,17 @@ iperf3:
   simtime: 30   # seconds
   interval: 1   # seconds
 
+# Modo CU-DU
 stack:
   core: core
   ran: split
   ue: ue-split
+
+# # Modo monolítico (gNB)
+# stack:
+#   core: core
+#   ran: gnb
+#   ue: ue
 
 containers:
   core:
